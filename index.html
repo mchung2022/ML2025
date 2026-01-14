@@ -1,0 +1,1989 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>供需博弈：市場生態系 - 經濟教育桌遊</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0f1c 0%, #1a1f35 50%, #0d1225 100%);
+      font-family: 'Noto Sans TC', sans-serif;
+      color: #e8e8e8;
+      overflow-x: hidden;
+    }
+    
+    /* ===== 主選單 ===== */
+    .screen {
+      display: none;
+      min-height: 100vh;
+    }
+    
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .menu-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
+    }
+    
+    .menu-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 30%, rgba(79, 172, 254, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(0, 242, 195, 0.1) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    
+    .title-section {
+      text-align: center;
+      margin-bottom: 50px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .title-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    .title-section h1 {
+      font-size: 64px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      letter-spacing: 4px;
+    }
+    
+    .title-section h2 {
+      font-size: 28px;
+      font-weight: 500;
+      color: #00f2c3;
+      letter-spacing: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .subtitle {
+      font-size: 16px;
+      color: #8892b0;
+      letter-spacing: 2px;
+    }
+    
+    .menu-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 50px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .menu-btn {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 18px 40px;
+      font-size: 18px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(79, 172, 254, 0.3);
+      border-radius: 12px;
+      color: #e8e8e8;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 280px;
+    }
+    
+    .menu-btn:hover {
+      background: rgba(79, 172, 254, 0.15);
+      border-color: #4facfe;
+      transform: translateX(5px);
+      box-shadow: 0 0 30px rgba(79, 172, 254, 0.2);
+    }
+    
+    .menu-btn.tutorial {
+      background: rgba(0, 242, 195, 0.1);
+      border-color: rgba(0, 242, 195, 0.3);
+    }
+    
+    .menu-btn.tutorial:hover {
+      background: rgba(0, 242, 195, 0.2);
+      border-color: #00f2c3;
+    }
+    
+    .btn-icon {
+      font-size: 24px;
+    }
+    
+    .features {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 20px;
+      font-size: 14px;
+      color: #8892b0;
+    }
+    
+    .feature-icon {
+      font-size: 18px;
+    }
+    
+    /* ===== 角色選擇 ===== */
+    .role-select-container {
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .role-select-container h2 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .instruction {
+      color: #8892b0;
+      margin-bottom: 40px;
+    }
+    
+    .players-row {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 1200px;
+      margin-bottom: 40px;
+    }
+    
+    .player-select-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 25px;
+      min-width: 260px;
+    }
+    
+    .player-select-card h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #4facfe;
+    }
+    
+    .role-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .role-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      color: #e8e8e8;
+    }
+    
+    .role-btn:hover:not(.taken) {
+      background: rgba(79, 172, 254, 0.1);
+      border-color: rgba(79, 172, 254, 0.3);
+    }
+    
+    .role-btn.selected {
+      background: rgba(0, 242, 195, 0.15);
+      border-color: #00f2c3;
+    }
+    
+    .role-btn.taken {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .role-icon {
+      font-size: 28px;
+    }
+    
+    .role-name {
+      font-weight: 600;
+      font-size: 15px;
+    }
+    
+    .role-desc {
+      font-size: 12px;
+      color: #8892b0;
+      display: block;
+    }
+    
+    .start-btn {
+      padding: 18px 60px;
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border: none;
+      border-radius: 12px;
+      color: #0a0f1c;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .start-btn:hover:not(:disabled) {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(79, 172, 254, 0.4);
+    }
+    
+    .start-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    /* ===== 遊戲主畫面 ===== */
+    .game-container {
+      min-height: 100vh;
+      padding: 20px;
+      display: grid;
+      grid-template-rows: auto 1fr auto auto;
+      gap: 20px;
+    }
+    
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 25px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .round-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .round-label {
+      color: #8892b0;
+      font-size: 14px;
+    }
+    
+    .round-number {
+      font-size: 24px;
+      font-weight: 700;
+      color: #4facfe;
+    }
+    
+    .current-player {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .player-icon {
+      font-size: 28px;
+    }
+    
+    .player-money {
+      font-size: 20px;
+      font-weight: 600;
+      color: #00f2c3;
+    }
+    
+    /* 市場面板 */
+    .market-panel {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .market-panel h3 {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #4facfe;
+    }
+    
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+    
+    .market-card {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    .good-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    
+    .good-icon {
+      font-size: 32px;
+    }
+    
+    .good-name {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .price {
+      font-size: 28px;
+      font-weight: 700;
+      color: #fff;
+    }
+    
+    .change {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .change.up {
+      color: #ff6b6b;
+    }
+    
+    .change.down {
+      color: #00f2c3;
+    }
+    
+    .supply-demand {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .sd-bar {
+      position: relative;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .supply-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    
+    .demand-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6b6b 0%, #ffa502 100%);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+    
+    .sd-label {
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+    
+    .policy-badges {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .badge {
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+    
+    .badge.ceiling {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+    }
+    
+    .badge.floor {
+      background: rgba(0, 242, 195, 0.2);
+      color: #00f2c3;
+    }
+    
+    .badge.tax {
+      background: rgba(255, 165, 2, 0.2);
+      color: #ffa502;
+    }
+    
+    /* 行動面板 */
+    .action-panel {
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .action-panel h3 {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #00f2c3;
+    }
+    
+    .action-section {
+      margin-bottom: 25px;
+      display: none;
+    }
+    
+    .action-section.active {
+      display: block;
+    }
+    
+    .action-section h4 {
+      margin-bottom: 15px;
+      font-size: 16px;
+      color: #8892b0;
+    }
+    
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 15px;
+      background: rgba(79, 172, 254, 0.1);
+      border: 1px solid rgba(79, 172, 254, 0.3);
+      border-radius: 10px;
+      color: #e8e8e8;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+    
+    .action-btn:hover:not(:disabled) {
+      background: rgba(79, 172, 254, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .action-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .action-btn .icon {
+      font-size: 28px;
+    }
+    
+    .cost {
+      font-size: 12px;
+      color: #8892b0;
+    }
+    
+    .satisfaction-display {
+      margin-top: 15px;
+      padding: 12px 20px;
+      background: rgba(255, 215, 0, 0.1);
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffd700;
+    }
+    
+    /* 政府政策 */
+    .policy-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    .policy-card {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    .policy-card h5 {
+      font-size: 15px;
+      margin-bottom: 8px;
+      color: #4facfe;
+    }
+    
+    .policy-card p {
+      font-size: 12px;
+      color: #8892b0;
+      margin-bottom: 8px;
+    }
+    
+    .policy-cost {
+      color: #ffa502 !important;
+      font-weight: 600;
+    }
+    
+    .policy-targets {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    .policy-btn {
+      padding: 8px 12px;
+      font-size: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .policy-btn:hover:not(:disabled) {
+      background: rgba(79, 172, 254, 0.2);
+      border-color: #4facfe;
+    }
+    
+    .policy-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    /* 投機者交易 */
+    .trade-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+    
+    .trade-card {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    
+    .trade-header {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    
+    .trade-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #8892b0;
+      margin-bottom: 12px;
+    }
+    
+    .trade-buttons {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .trade-btn {
+      flex: 1;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .trade-btn.buy {
+      background: rgba(0, 242, 195, 0.2);
+      color: #00f2c3;
+    }
+    
+    .trade-btn.sell {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+    }
+    
+    .trade-btn:hover:not(:disabled) {
+      transform: scale(1.02);
+    }
+    
+    .trade-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    
+    .next-btn {
+      margin-top: 20px;
+      padding: 15px 40px;
+      font-size: 16px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border: none;
+      border-radius: 10px;
+      color: #0a0f1c;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .next-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(79, 172, 254, 0.3);
+    }
+    
+    /* 玩家狀態列 */
+    .players-status {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .player-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.2s ease;
+    }
+    
+    .player-status.active {
+      background: rgba(79, 172, 254, 0.1);
+      border-color: #4facfe;
+    }
+    
+    .status-icon {
+      font-size: 24px;
+    }
+    
+    .status-name {
+      font-weight: 600;
+    }
+    
+    .status-money {
+      color: #00f2c3;
+      font-weight: 600;
+    }
+    
+    .acted-badge {
+      color: #00f2c3;
+      font-size: 18px;
+    }
+    
+    /* ===== 遊戲結束 ===== */
+    .gameover-container {
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .gameover-container h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #ffd700 0%, #ffa502 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .gameover-container > h2 {
+      font-size: 24px;
+      color: #8892b0;
+      margin-bottom: 30px;
+    }
+    
+    .rankings {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 40px;
+    }
+    
+    .ranking-card {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .ranking-card.rank-1 {
+      background: rgba(255, 215, 0, 0.1);
+      border-color: rgba(255, 215, 0, 0.3);
+    }
+    
+    .medal {
+      font-size: 32px;
+      min-width: 40px;
+    }
+    
+    .rank-icon {
+      font-size: 36px;
+    }
+    
+    .rank-info {
+      flex: 1;
+    }
+    
+    .rank-name {
+      font-size: 18px;
+      font-weight: 600;
+      display: block;
+    }
+    
+    .rank-role {
+      font-size: 14px;
+      color: #8892b0;
+    }
+    
+    .rank-score {
+      text-align: center;
+      min-width: 80px;
+    }
+    
+    .score-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #4facfe;
+      display: block;
+    }
+    
+    .score-label {
+      font-size: 12px;
+      color: #8892b0;
+    }
+    
+    .score-breakdown {
+      font-size: 12px;
+      color: #8892b0;
+      text-align: right;
+      min-width: 120px;
+    }
+    
+    .economic-summary {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    
+    .economic-summary h3 {
+      margin-bottom: 15px;
+      color: #4facfe;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    
+    .summary-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+    
+    .summary-icon {
+      font-size: 24px;
+    }
+    
+    .summary-name {
+      flex: 1;
+    }
+    
+    .summary-price {
+      font-weight: 600;
+    }
+    
+    .summary-change {
+      font-size: 12px;
+    }
+    
+    .summary-change.up {
+      color: #ff6b6b;
+    }
+    
+    .summary-change.down {
+      color: #00f2c3;
+    }
+    
+    .learning-points {
+      width: 100%;
+      max-width: 600px;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(0, 242, 195, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 242, 195, 0.2);
+    }
+    
+    .learning-points h3 {
+      margin-bottom: 15px;
+      color: #00f2c3;
+    }
+    
+    .learning-points ul {
+      list-style: none;
+    }
+    
+    .learning-points li {
+      padding: 8px 0;
+      padding-left: 20px;
+      position: relative;
+      font-size: 14px;
+      color: #c8ccd4;
+    }
+    
+    .learning-points li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: #00f2c3;
+    }
+    
+    .restart-btn {
+      padding: 18px 50px;
+      font-size: 18px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border: none;
+      border-radius: 12px;
+      color: #0a0f1c;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .restart-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px rgba(79, 172, 254, 0.4);
+    }
+    
+    /* ===== 彈窗 ===== */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+    
+    .overlay.active {
+      display: flex;
+    }
+    
+    .modal {
+      background: linear-gradient(135deg, #1a1f35 0%, #0d1225 100%);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 500px;
+      width: 90%;
+      position: relative;
+      border: 1px solid rgba(79, 172, 254, 0.3);
+      box-shadow: 0 0 60px rgba(79, 172, 254, 0.2);
+    }
+    
+    .tutorial-progress {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+    
+    .progress-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .progress-dot.active {
+      background: #4facfe;
+      transform: scale(1.2);
+    }
+    
+    .progress-dot.completed {
+      background: #00f2c3;
+    }
+    
+    .modal h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #4facfe;
+    }
+    
+    .modal-content {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #c8ccd4;
+      white-space: pre-line;
+      margin-bottom: 30px;
+    }
+    
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    
+    .modal-buttons button {
+      padding: 12px 30px;
+      font-size: 15px;
+      font-weight: 600;
+      background: rgba(79, 172, 254, 0.2);
+      border: 1px solid rgba(79, 172, 254, 0.5);
+      border-radius: 8px;
+      color: #e8e8e8;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .modal-buttons button:hover {
+      background: rgba(79, 172, 254, 0.3);
+    }
+    
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 30px;
+      height: 30px;
+      background: transparent;
+      border: none;
+      color: #8892b0;
+      font-size: 20px;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    
+    .close-btn:hover {
+      color: #e8e8e8;
+    }
+    
+    /* 事件彈窗 */
+    .event-modal {
+      text-align: center;
+    }
+    
+    .event-icon {
+      font-size: 60px;
+      margin-bottom: 15px;
+      animation: shake 0.5s ease-in-out;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    
+    .event-modal h2 {
+      font-size: 20px;
+      color: #ff6b6b;
+      margin-bottom: 10px;
+    }
+    
+    .event-modal h3 {
+      font-size: 26px;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+    
+    .event-modal p {
+      color: #8892b0;
+      margin-bottom: 25px;
+      font-size: 15px;
+    }
+    
+    .event-modal button {
+      padding: 12px 40px;
+      font-size: 16px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border: none;
+      border-radius: 8px;
+      color: #0a0f1c;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .event-modal button:hover {
+      transform: scale(1.05);
+    }
+    
+    /* 響應式 */
+    @media (max-width: 768px) {
+      .title-section h1 {
+        font-size: 40px;
+      }
+      
+      .title-section h2 {
+        font-size: 20px;
+        letter-spacing: 4px;
+      }
+      
+      .players-row {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .game-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+      }
+      
+      .market-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .action-buttons {
+        grid-template-columns: 1fr;
+      }
+      
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .ranking-card {
+        flex-wrap: wrap;
+      }
+      
+      .score-breakdown {
+        width: 100%;
+        text-align: center;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 主選單 -->
+  <div id="menu-screen" class="screen menu-container active">
+    <div class="title-section">
+      <div class="title-icon">⚖️</div>
+      <h1>供需博弈</h1>
+      <h2>市場生態系</h2>
+      <p class="subtitle">體驗真實的市場經濟機制</p>
+    </div>
+    
+    <div class="menu-buttons">
+      <button class="menu-btn" onclick="initGame(2)">
+        <span class="btn-icon">👥</span>
+        <span>2 人遊戲</span>
+      </button>
+      <button class="menu-btn" onclick="initGame(3)">
+        <span class="btn-icon">👥</span>
+        <span>3 人遊戲</span>
+      </button>
+      <button class="menu-btn" onclick="initGame(4)">
+        <span class="btn-icon">👥</span>
+        <span>4 人遊戲</span>
+      </button>
+      <button class="menu-btn tutorial" onclick="showTutorial()">
+        <span class="btn-icon">📖</span>
+        <span>遊戲教學</span>
+      </button>
+    </div>
+    
+    <div class="features">
+      <div class="feature">
+        <span class="feature-icon">📊</span>
+        <span>供需法則</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">💰</span>
+        <span>價格機制</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🏛️</span>
+        <span>政策影響</span>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🎲</span>
+        <span>經濟事件</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 角色選擇 -->
+  <div id="role-screen" class="screen role-select-container">
+    <h2>選擇你的角色</h2>
+    <p class="instruction">每位玩家選擇一個市場角色</p>
+    
+    <div id="players-row" class="players-row"></div>
+    
+    <button id="start-game-btn" class="start-btn" onclick="startGame()" disabled>
+      開始遊戲
+    </button>
+  </div>
+
+  <!-- 遊戲主畫面 -->
+  <div id="game-screen" class="screen game-container">
+    <div class="game-header">
+      <div class="round-info">
+        <span class="round-label">回合</span>
+        <span id="round-display" class="round-number">1/12</span>
+      </div>
+      <div id="current-player-display" class="current-player">
+        <span class="player-icon">🏭</span>
+        <span>玩家 1 - 生產者</span>
+      </div>
+      <div id="player-money-display" class="player-money">
+        💵 $500
+      </div>
+    </div>
+
+    <div class="market-panel">
+      <h3>📊 市場行情</h3>
+      <div id="market-grid" class="market-grid"></div>
+    </div>
+
+    <div class="action-panel">
+      <h3>🎯 可執行行動</h3>
+      
+      <!-- 生產者行動 -->
+      <div id="producer-actions" class="action-section">
+        <h4>🏭 生產商品</h4>
+        <div id="produce-buttons" class="action-buttons"></div>
+      </div>
+
+      <!-- 消費者行動 -->
+      <div id="consumer-actions" class="action-section">
+        <h4>🛒 購買商品（獲得滿足度）</h4>
+        <div id="consume-buttons" class="action-buttons"></div>
+        <div id="satisfaction-display" class="satisfaction-display">
+          滿足度: ⭐ 0
+        </div>
+      </div>
+
+      <!-- 政府行動 -->
+      <div id="government-actions" class="action-section">
+        <h4>🏛️ 實施政策</h4>
+        <div id="policy-grid" class="policy-grid"></div>
+      </div>
+
+      <!-- 投機者行動 -->
+      <div id="speculator-actions" class="action-section">
+        <h4>📈 投機交易</h4>
+        <div id="trade-grid" class="trade-grid"></div>
+      </div>
+
+      <button class="next-btn" onclick="nextPlayer()">
+        下一位玩家 →
+      </button>
+    </div>
+
+    <div id="players-status" class="players-status"></div>
+  </div>
+
+  <!-- 遊戲結束 -->
+  <div id="gameover-screen" class="screen gameover-container">
+    <h1>🏆 遊戲結束</h1>
+    <h2>最終排名</h2>
+    
+    <div id="rankings" class="rankings"></div>
+
+    <div class="economic-summary">
+      <h3>📈 經濟總結</h3>
+      <div id="summary-grid" class="summary-grid"></div>
+    </div>
+
+    <div class="learning-points">
+      <h3>💡 經濟學習要點</h3>
+      <ul>
+        <li>供給增加 → 價格下跌；需求增加 → 價格上漲</li>
+        <li>必需品（如糧食）價格彈性低，價格變動對需求影響小</li>
+        <li>奢侈品價格彈性高，消費者對價格變動敏感</li>
+        <li>政府政策（價格管制、補貼、稅收）會影響市場均衡</li>
+        <li>外部事件（天災、技術革新）會造成供需震盪</li>
+      </ul>
+    </div>
+
+    <button class="restart-btn" onclick="restartGame()">
+      🔄 重新開始
+    </button>
+  </div>
+
+  <!-- 教學彈窗 -->
+  <div id="tutorial-overlay" class="overlay">
+    <div class="modal">
+      <div id="tutorial-progress" class="tutorial-progress"></div>
+      <h2 id="tutorial-title"></h2>
+      <p id="tutorial-content" class="modal-content"></p>
+      <div class="modal-buttons">
+        <button id="tutorial-prev" onclick="prevTutorial()">← 上一步</button>
+        <button id="tutorial-next" onclick="nextTutorial()">下一步 →</button>
+      </div>
+      <button class="close-btn" onclick="closeTutorial()">✕</button>
+    </div>
+  </div>
+
+  <!-- 事件彈窗 -->
+  <div id="event-overlay" class="overlay">
+    <div class="modal event-modal">
+      <div class="event-icon">📰</div>
+      <h2>經濟事件！</h2>
+      <h3 id="event-name"></h3>
+      <p id="event-description"></p>
+      <button onclick="closeEvent()">了解 →</button>
+    </div>
+  </div>
+
+  <script>
+    // ===== 遊戲數據 =====
+    const GOODS = [
+      { id: 'food', name: '糧食', icon: '🌾', basePrice: 10, elasticity: 0.3 },
+      { id: 'energy', name: '能源', icon: '⚡', basePrice: 15, elasticity: 0.5 },
+      { id: 'tech', name: '科技', icon: '💻', basePrice: 25, elasticity: 0.8 },
+      { id: 'luxury', name: '奢侈品', icon: '💎', basePrice: 50, elasticity: 1.2 },
+    ];
+
+    const EVENTS = [
+      { id: 'drought', name: '乾旱來襲', description: '農作物減產，糧食供給下降30%', effect: { good: 'food', supplyChange: -0.3 } },
+      { id: 'oil_crisis', name: '能源危機', description: '國際油價飆漲，能源成本上升', effect: { good: 'energy', supplyChange: -0.25 } },
+      { id: 'tech_boom', name: '科技革命', description: '新技術突破，生產效率提升', effect: { good: 'tech', supplyChange: 0.4 } },
+      { id: 'recession', name: '經濟衰退', description: '消費信心下滑，整體需求減少', effect: { demandChange: -0.2 } },
+      { id: 'stimulus', name: '政府刺激', description: '財政擴張政策，市場資金充裕', effect: { demandChange: 0.3 } },
+      { id: 'trade_war', name: '貿易戰', description: '關稅提高，進口成本上升', effect: { good: 'luxury', supplyChange: -0.35 } },
+      { id: 'innovation', name: '創新浪潮', description: '新產品帶動需求', effect: { good: 'tech', demandChange: 0.4 } },
+      { id: 'festival', name: '節慶旺季', description: '消費需求大增', effect: { good: 'luxury', demandChange: 0.5 } },
+    ];
+
+    const POLICIES = [
+      { id: 'price_ceiling', name: '價格上限', cost: 50, description: '限制最高售價，保護消費者', effect: 'ceiling' },
+      { id: 'price_floor', name: '價格下限', cost: 50, description: '保障最低收購價，保護生產者', effect: 'floor' },
+      { id: 'subsidy', name: '生產補貼', cost: 80, description: '補貼生產者，增加供給', effect: 'subsidy' },
+      { id: 'tax', name: '消費稅', cost: 0, description: '課徵消費稅，增加政府收入', effect: 'tax' },
+    ];
+
+    const ROLES = [
+      { id: 'producer', name: '生產者', icon: '🏭', description: '生產商品賺取利潤' },
+      { id: 'consumer', name: '消費者', icon: '🛒', description: '購買商品滿足需求' },
+      { id: 'government', name: '政府', icon: '🏛️', description: '制定政策調控市場' },
+      { id: 'speculator', name: '投機者', icon: '📈', description: '低買高賣賺取價差' },
+    ];
+
+    const TUTORIALS = [
+      { title: '歡迎來到市場生態系！', content: '這是一款模擬真實市場經濟的策略遊戲。你將扮演不同的市場參與者，體驗供需法則、價格機制與政策影響。' },
+      { title: '供需決定價格', content: '當供給 > 需求時，價格下跌；當需求 > 供給時，價格上漲。不同商品的價格彈性不同：糧食是必需品（彈性低），奢侈品彈性高。' },
+      { title: '四種角色', content: '🏭 生產者：投資生產，增加供給賺取利潤\n🛒 消費者：購買商品獲得滿足度分數\n🏛️ 政府：實施政策調控市場\n📈 投機者：預測價格波動，低買高賣' },
+      { title: '經濟事件', content: '每回合開始會隨機發生經濟事件，如乾旱、科技革命、貿易戰等，這些事件會影響供給或需求，進而改變價格。' },
+      { title: '獲勝條件', content: '遊戲進行12回合，最終根據各角色的目標計算分數：\n• 生產者：累積利潤\n• 消費者：滿足度總和\n• 政府：市場穩定度 + 稅收\n• 投機者：資產增值' },
+    ];
+
+    // ===== 遊戲狀態 =====
+    let players = [];
+    let currentPlayerIndex = 0;
+    let round = 1;
+    const maxRounds = 12;
+    let tutorialStep = 0;
+    
+    let market = {
+      food: { supply: 100, demand: 100, price: 10, policies: {} },
+      energy: { supply: 100, demand: 100, price: 15, policies: {} },
+      tech: { supply: 100, demand: 100, price: 25, policies: {} },
+      luxury: { supply: 100, demand: 100, price: 50, policies: {} },
+    };
+
+    // ===== 工具函數 =====
+    function calculatePrice(good, supply, demand, policies) {
+      const supplyDemandRatio = supply / Math.max(demand, 0.1);
+      let price = good.basePrice * Math.pow(1 / supplyDemandRatio, good.elasticity);
+      
+      if (policies.ceiling && price > policies.ceiling) {
+        price = policies.ceiling;
+      }
+      if (policies.floor && price < policies.floor) {
+        price = policies.floor;
+      }
+      if (policies.tax) {
+        price *= (1 + policies.tax);
+      }
+      
+      return Math.round(price * 100) / 100;
+    }
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // ===== 遊戲初始化 =====
+    function initGame(numPlayers) {
+      players = Array.from({ length: numPlayers }, (_, i) => ({
+        id: i,
+        name: `玩家 ${i + 1}`,
+        role: null,
+        money: 500,
+        inventory: { food: 0, energy: 0, tech: 0, luxury: 0 },
+        satisfaction: 0,
+        stabilityScore: 0,
+        hasActed: false,
+      }));
+      
+      renderRoleSelect();
+      showScreen('role-screen');
+    }
+
+    function renderRoleSelect() {
+      const container = document.getElementById('players-row');
+      container.innerHTML = '';
+      
+      players.forEach(player => {
+        const card = document.createElement('div');
+        card.className = 'player-select-card';
+        card.innerHTML = `
+          <h3>${player.name}</h3>
+          <div class="role-options">
+            ${ROLES.map(role => {
+              const isSelected = player.role === role.id;
+              const isTaken = players.some(p => p.id !== player.id && p.role === role.id);
+              return `
+                <button class="role-btn ${isSelected ? 'selected' : ''} ${isTaken ? 'taken' : ''}"
+                        onclick="selectRole(${player.id}, '${role.id}')"
+                        ${isTaken ? 'disabled' : ''}>
+                  <span class="role-icon">${role.icon}</span>
+                  <div>
+                    <span class="role-name">${role.name}</span>
+                    <span class="role-desc">${role.description}</span>
+                  </div>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      
+      updateStartButton();
+    }
+
+    function selectRole(playerId, roleId) {
+      players = players.map(p => p.id === playerId ? { ...p, role: roleId } : p);
+      renderRoleSelect();
+    }
+
+    function updateStartButton() {
+      const btn = document.getElementById('start-game-btn');
+      btn.disabled = !players.every(p => p.role);
+    }
+
+    function startGame() {
+      if (players.every(p => p.role)) {
+        showScreen('game-screen');
+        triggerEvent();
+        renderGame();
+      }
+    }
+
+    // ===== 事件系統 =====
+    function triggerEvent() {
+      const event = EVENTS[Math.floor(Math.random() * EVENTS.length)];
+      
+      // 應用事件效果
+      if (event.effect.good) {
+        const goodId = event.effect.good;
+        if (event.effect.supplyChange) {
+          market[goodId].supply = Math.max(10, market[goodId].supply * (1 + event.effect.supplyChange));
+        }
+        if (event.effect.demandChange) {
+          market[goodId].demand = Math.max(10, market[goodId].demand * (1 + event.effect.demandChange));
+        }
+      } else if (event.effect.demandChange) {
+        Object.keys(market).forEach(goodId => {
+          market[goodId].demand = Math.max(10, market[goodId].demand * (1 + event.effect.demandChange));
+        });
+      }
+      
+      // 重新計算價格
+      GOODS.forEach(good => {
+        market[good.id].price = calculatePrice(good, market[good.id].supply, market[good.id].demand, market[good.id].policies);
+      });
+      
+      // 顯示事件
+      document.getElementById('event-name').textContent = event.name;
+      document.getElementById('event-description').textContent = event.description;
+      document.getElementById('event-overlay').classList.add('active');
+    }
+
+    function closeEvent() {
+      document.getElementById('event-overlay').classList.remove('active');
+    }
+
+    // ===== 遊戲渲染 =====
+    function renderGame() {
+      const currentPlayer = players[currentPlayerIndex];
+      const roleInfo = ROLES.find(r => r.id === currentPlayer.role);
+      
+      // 更新頂部資訊
+      document.getElementById('round-display').textContent = `${round}/${maxRounds}`;
+      document.getElementById('current-player-display').innerHTML = `
+        <span class="player-icon">${roleInfo.icon}</span>
+        <span>${currentPlayer.name} - ${roleInfo.name}</span>
+      `;
+      document.getElementById('player-money-display').textContent = `💵 $${currentPlayer.money.toFixed(0)}`;
+      
+      // 渲染市場
+      renderMarket();
+      
+      // 渲染行動面板
+      renderActions(currentPlayer);
+      
+      // 渲染玩家狀態
+      renderPlayersStatus();
+    }
+
+    function renderMarket() {
+      const container = document.getElementById('market-grid');
+      container.innerHTML = '';
+      
+      GOODS.forEach(good => {
+        const marketData = market[good.id];
+        const priceChange = ((marketData.price - good.basePrice) / good.basePrice * 100).toFixed(1);
+        const isUp = marketData.price > good.basePrice;
+        
+        const card = document.createElement('div');
+        card.className = 'market-card';
+        card.innerHTML = `
+          <div class="good-header">
+            <span class="good-icon">${good.icon}</span>
+            <span class="good-name">${good.name}</span>
+          </div>
+          <div class="price-row">
+            <span class="price">$${marketData.price.toFixed(1)}</span>
+            <span class="change ${isUp ? 'up' : 'down'}">
+              ${isUp ? '▲' : '▼'} ${Math.abs(priceChange)}%
+            </span>
+          </div>
+          <div class="supply-demand">
+            <div class="sd-bar">
+              <div class="supply-bar" style="width: ${Math.min(100, marketData.supply)}%"></div>
+              <span class="sd-label">供給 ${marketData.supply.toFixed(0)}</span>
+            </div>
+            <div class="sd-bar">
+              <div class="demand-bar" style="width: ${Math.min(100, marketData.demand)}%"></div>
+              <span class="sd-label">需求 ${marketData.demand.toFixed(0)}</span>
+            </div>
+          </div>
+          ${Object.keys(marketData.policies).length > 0 ? `
+            <div class="policy-badges">
+              ${marketData.policies.ceiling ? '<span class="badge ceiling">價格上限</span>' : ''}
+              ${marketData.policies.floor ? '<span class="badge floor">價格下限</span>' : ''}
+              ${marketData.policies.tax ? '<span class="badge tax">消費稅</span>' : ''}
+            </div>
+          ` : ''}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderActions(player) {
+      // 隱藏所有行動區
+      document.querySelectorAll('.action-section').forEach(s => s.classList.remove('active'));
+      
+      // 顯示對應角色的行動
+      switch (player.role) {
+        case 'producer':
+          renderProducerActions(player);
+          document.getElementById('producer-actions').classList.add('active');
+          break;
+        case 'consumer':
+          renderConsumerActions(player);
+          document.getElementById('consumer-actions').classList.add('active');
+          break;
+        case 'government':
+          renderGovernmentActions(player);
+          document.getElementById('government-actions').classList.add('active');
+          break;
+        case 'speculator':
+          renderSpeculatorActions(player);
+          document.getElementById('speculator-actions').classList.add('active');
+          break;
+      }
+    }
+
+    function renderProducerActions(player) {
+      const container = document.getElementById('produce-buttons');
+      container.innerHTML = '';
+      
+      GOODS.forEach(good => {
+        const cost = good.basePrice * 0.6 * 5;
+        const btn = document.createElement('button');
+        btn.className = 'action-btn';
+        btn.disabled = player.hasActed || player.money < cost;
+        btn.onclick = () => produce(player.id, good.id, 5);
+        btn.innerHTML = `
+          <span class="icon">${good.icon}</span>
+          <span>生產 ${good.name}</span>
+          <span class="cost">成本: $${cost.toFixed(0)}</span>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function renderConsumerActions(player) {
+      const container = document.getElementById('consume-buttons');
+      container.innerHTML = '';
+      
+      GOODS.forEach(good => {
+        const cost = market[good.id].price * 3;
+        const btn = document.createElement('button');
+        btn.className = 'action-btn';
+        btn.disabled = player.hasActed || player.money < cost;
+        btn.onclick = () => buy(player.id, good.id, 3);
+        btn.innerHTML = `
+          <span class="icon">${good.icon}</span>
+          <span>購買 ${good.name}</span>
+          <span class="cost">花費: $${cost.toFixed(0)}</span>
+        `;
+        container.appendChild(btn);
+      });
+      
+      document.getElementById('satisfaction-display').textContent = `滿足度: ⭐ ${player.satisfaction}`;
+    }
+
+    function renderGovernmentActions(player) {
+      const container = document.getElementById('policy-grid');
+      container.innerHTML = '';
+      
+      POLICIES.forEach(policy => {
+        const card = document.createElement('div');
+        card.className = 'policy-card';
+        card.innerHTML = `
+          <h5>${policy.name}</h5>
+          <p>${policy.description}</p>
+          <p class="policy-cost">成本: $${policy.cost}</p>
+          <div class="policy-targets">
+            ${GOODS.map(good => `
+              <button class="policy-btn" 
+                      onclick="implementPolicy(${player.id}, '${policy.id}', '${good.id}')"
+                      ${player.hasActed || player.money < policy.cost ? 'disabled' : ''}>
+                ${good.icon}
+              </button>
+            `).join('')}
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderSpeculatorActions(player) {
+      const container = document.getElementById('trade-grid');
+      container.innerHTML = '';
+      
+      GOODS.forEach(good => {
+        const card = document.createElement('div');
+        card.className = 'trade-card';
+        card.innerHTML = `
+          <div class="trade-header">${good.icon} ${good.name}</div>
+          <div class="trade-info">
+            <span>持有: ${player.inventory[good.id]}</span>
+            <span>市價: $${market[good.id].price.toFixed(1)}</span>
+          </div>
+          <div class="trade-buttons">
+            <button class="trade-btn buy" 
+                    onclick="buy(${player.id}, '${good.id}', 5)"
+                    ${player.hasActed || player.money < market[good.id].price * 5 ? 'disabled' : ''}>
+              買入 5
+            </button>
+            <button class="trade-btn sell" 
+                    onclick="sell(${player.id}, '${good.id}', 5)"
+                    ${player.hasActed || player.inventory[good.id] < 5 ? 'disabled' : ''}>
+              賣出 5
+            </button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderPlayersStatus() {
+      const container = document.getElementById('players-status');
+      container.innerHTML = '';
+      
+      players.forEach((player, idx) => {
+        const role = ROLES.find(r => r.id === player.role);
+        const status = document.createElement('div');
+        status.className = `player-status ${idx === currentPlayerIndex ? 'active' : ''}`;
+        status.innerHTML = `
+          <span class="status-icon">${role.icon}</span>
+          <span class="status-name">${player.name}</span>
+          <span class="status-money">$${player.money.toFixed(0)}</span>
+          ${player.hasActed ? '<span class="acted-badge">✓</span>' : ''}
+        `;
+        container.appendChild(status);
+      });
+    }
+
+    // ===== 玩家行動 =====
+    function produce(playerId, goodId, amount) {
+      const good = GOODS.find(g => g.id === goodId);
+      const cost = good.basePrice * 0.6 * amount;
+      
+      players = players.map(p => {
+        if (p.id === playerId && p.money >= cost) {
+          return {
+            ...p,
+            money: p.money - cost,
+            inventory: { ...p.inventory, [goodId]: p.inventory[goodId] + amount },
+            hasActed: true,
+          };
+        }
+        return p;
+      });
+      
+      market[goodId].supply += amount * 5;
+      market[goodId].price = calculatePrice(good, market[goodId].supply, market[goodId].demand, market[goodId].policies);
+      
+      renderGame();
+    }
+
+    function buy(playerId, goodId, amount) {
+      const price = market[goodId].price;
+      const totalCost = price * amount;
+      const player = players.find(p => p.id === playerId);
+      
+      players = players.map(p => {
+        if (p.id === playerId && p.money >= totalCost) {
+          const satisfactionGain = p.role === 'consumer' ? amount * 10 : 0;
+          return {
+            ...p,
+            money: p.money - totalCost,
+            inventory: { ...p.inventory, [goodId]: p.inventory[goodId] + amount },
+            satisfaction: p.satisfaction + satisfactionGain,
+            hasActed: true,
+          };
+        }
+        return p;
+      });
+      
+      const good = GOODS.find(g => g.id === goodId);
+      market[goodId].demand += amount * 3;
+      market[goodId].price = calculatePrice(good, market[goodId].supply, market[goodId].demand, market[goodId].policies);
+      
+      renderGame();
+    }
+
+    function sell(playerId, goodId, amount) {
+      const player = players.find(p => p.id === playerId);
+      if (player.inventory[goodId] < amount) return;
+      
+      const price = market[goodId].price;
+      const revenue = price * amount * 0.95;
+      
+      players = players.map(p => {
+        if (p.id === playerId) {
+          return {
+            ...p,
+            money: p.money + revenue,
+            inventory: { ...p.inventory, [goodId]: p.inventory[goodId] - amount },
+            hasActed: true,
+          };
+        }
+        return p;
+      });
+      
+      const good = GOODS.find(g => g.id === goodId);
+      market[goodId].supply += amount * 2;
+      market[goodId].price = calculatePrice(good, market[goodId].supply, market[goodId].demand, market[goodId].policies);
+      
+      renderGame();
+    }
+
+    function implementPolicy(playerId, policyId, goodId) {
+      const policy = POLICIES.find(p => p.id === policyId);
+      const player = players.find(p => p.id === playerId);
+      
+      if (player.money < policy.cost) return;
+      
+      players = players.map(p => {
+        if (p.id === playerId) {
+          return { ...p, money: p.money - policy.cost, hasActed: true };
+        }
+        return p;
+      });
+      
+      switch (policy.effect) {
+        case 'ceiling':
+          market[goodId].policies.ceiling = market[goodId].price * 0.8;
+          break;
+        case 'floor':
+          market[goodId].policies.floor = market[goodId].price * 1.2;
+          break;
+        case 'subsidy':
+          market[goodId].supply *= 1.3;
+          break;
+        case 'tax':
+          market[goodId].policies.tax = 0.1;
+          break;
+      }
+      
+      const good = GOODS.find(g => g.id === goodId);
+      market[goodId].price = calculatePrice(good, market[goodId].supply, market[goodId].demand, market[goodId].policies);
+      
+      renderGame();
+    }
+
+    // ===== 回合控制 =====
+    function nextPlayer() {
+      if (currentPlayerIndex < players.length - 1) {
+        currentPlayerIndex++;
+      } else {
+        endTurn();
+      }
+      renderGame();
+    }
+
+    function endTurn() {
+      // 重置行動狀態
+      players = players.map(p => ({ ...p, hasActed: false }));
+      
+      // 計算政府穩定度
+      players = players.map(p => {
+        if (p.role === 'government') {
+          const priceVariance = GOODS.reduce((acc, good) => {
+            const deviation = Math.abs(market[good.id].price - good.basePrice) / good.basePrice;
+            return acc + deviation;
+          }, 0) / GOODS.length;
+          
+          return { ...p, stabilityScore: p.stabilityScore + Math.max(0, 100 - priceVariance * 100) };
+        }
+        return p;
+      });
+      
+      // 市場自然調整
+      GOODS.forEach(good => {
+        market[good.id].supply = market[good.id].supply * 0.95 + 100 * 0.05;
+        market[good.id].demand = market[good.id].demand * 0.95 + 100 * 0.05;
+        market[good.id].price = calculatePrice(good, market[good.id].supply, market[good.id].demand, market[good.id].policies);
+      });
+      
+      if (round >= maxRounds) {
+        showGameOver();
+      } else {
+        round++;
+        currentPlayerIndex = 0;
+        triggerEvent();
+      }
+    }
+
+    // ===== 遊戲結束 =====
+    function calculateFinalScore(player) {
+      let score = player.money;
+      
+      Object.keys(player.inventory).forEach(goodId => {
+        score += player.inventory[goodId] * market[goodId].price;
+      });
+      
+      if (player.role === 'consumer') {
+        score += player.satisfaction * 5;
+      } else if (player.role === 'government') {
+        score += player.stabilityScore;
+      }
+      
+      return Math.round(score);
+    }
+
+    function showGameOver() {
+      const sortedPlayers = [...players].sort((a, b) => calculateFinalScore(b) - calculateFinalScore(a));
+      const medals = ['🥇', '🥈', '🥉', ''];
+      
+      const rankingsContainer = document.getElementById('rankings');
+      rankingsContainer.innerHTML = '';
+      
+      sortedPlayers.forEach((player, idx) => {
+        const role = ROLES.find(r => r.id === player.role);
+        const card = document.createElement('div');
+        card.className = `ranking-card ${idx === 0 ? 'rank-1' : ''}`;
+        card.innerHTML = `
+          <span class="medal">${medals[idx] || ''}</span>
+          <span class="rank-icon">${role.icon}</span>
+          <div class="rank-info">
+            <span class="rank-name">${player.name}</span>
+            <span class="rank-role">${role.name}</span>
+          </div>
+          <div class="rank-score">
+            <span class="score-value">${calculateFinalScore(player)}</span>
+            <span class="score-label">總分</span>
+          </div>
+          <div class="score-breakdown">
+            <div>💵 現金: $${player.money.toFixed(0)}</div>
+            ${player.role === 'consumer' ? `<div>⭐ 滿足度: ${player.satisfaction}</div>` : ''}
+            ${player.role === 'government' ? `<div>📊 穩定度: ${player.stabilityScore.toFixed(0)}</div>` : ''}
+          </div>
+        `;
+        rankingsContainer.appendChild(card);
+      });
+      
+      // 經濟總結
+      const summaryContainer = document.getElementById('summary-grid');
+      summaryContainer.innerHTML = '';
+      
+      GOODS.forEach(good => {
+        const finalPrice = market[good.id].price;
+        const changePercent = ((finalPrice - good.basePrice) / good.basePrice * 100).toFixed(1);
+        
+        const item = document.createElement('div');
+        item.className = 'summary-item';
+        item.innerHTML = `
+          <span class="summary-icon">${good.icon}</span>
+          <span class="summary-name">${good.name}</span>
+          <span class="summary-price">$${finalPrice.toFixed(1)}</span>
+          <span class="summary-change ${finalPrice > good.basePrice ? 'up' : 'down'}">
+            (${changePercent}%)
+          </span>
+        `;
+        summaryContainer.appendChild(item);
+      });
+      
+      showScreen('gameover-screen');
+    }
+
+    function restartGame() {
+      players = [];
+      currentPlayerIndex = 0;
+      round = 1;
+      market = {
+        food: { supply: 100, demand: 100, price: 10, policies: {} },
+        energy: { supply: 100, demand: 100, price: 15, policies: {} },
+        tech: { supply: 100, demand: 100, price: 25, policies: {} },
+        luxury: { supply: 100, demand: 100, price: 50, policies: {} },
+      };
+      showScreen('menu-screen');
+    }
+
+    // ===== 教學系統 =====
+    function showTutorial() {
+      tutorialStep = 0;
+      renderTutorial();
+      document.getElementById('tutorial-overlay').classList.add('active');
+    }
+
+    function renderTutorial() {
+      const tutorial = TUTORIALS[tutorialStep];
+      
+      document.getElementById('tutorial-title').textContent = tutorial.title;
+      document.getElementById('tutorial-content').textContent = tutorial.content;
+      
+      // 進度點
+      const progressContainer = document.getElementById('tutorial-progress');
+      progressContainer.innerHTML = '';
+      TUTORIALS.forEach((_, idx) => {
+        const dot = document.createElement('span');
+        dot.className = `progress-dot ${idx === tutorialStep ? 'active' : ''} ${idx < tutorialStep ? 'completed' : ''}`;
+        progressContainer.appendChild(dot);
+      });
+      
+      // 按鈕狀態
+      document.getElementById('tutorial-prev').style.display = tutorialStep > 0 ? 'block' : 'none';
+      document.getElementById('tutorial-next').textContent = tutorialStep < TUTORIALS.length - 1 ? '下一步 →' : '開始遊戲 ✓';
+    }
+
+    function prevTutorial() {
+      if (tutorialStep > 0) {
+        tutorialStep--;
+        renderTutorial();
+      }
+    }
+
+    function nextTutorial() {
+      if (tutorialStep < TUTORIALS.length - 1) {
+        tutorialStep++;
+        renderTutorial();
+      } else {
+        closeTutorial();
+      }
+    }
+
+    function closeTutorial() {
+      document.getElementById('tutorial-overlay').classList.remove('active');
+      tutorialStep = 0;
+    }
+  </script>
+</body>
+</html>
